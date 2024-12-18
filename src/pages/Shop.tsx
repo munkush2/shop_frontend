@@ -2,26 +2,41 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Iproduct } from '../Interfaces/Iproduct';
 import '../components/Shop.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { number } from 'yup';
 import { Link, Outlet, NavLink } from 'react-router';
+import { Button } from 'primereact/button';  
+import { Dropdown } from 'primereact/dropdown';
+import { Ibrand } from '../Interfaces/Ibrand';
+        
 
-const fetchProducts = async () => {
-    const response = await axios.get("http://localhost:8000/api/shop");
-    return response.data;
-}
 
-const Shop = () => {
 
-    const { data, isLoading, status } = useQuery({
-        queryKey: ['product'],
-        queryFn: fetchProducts,
+ 
+function Shop()  {
+    const [brand, setBrand] = useState<Ibrand | null>(null);
+    const fetchProducts = async (query:string | null) => {
+        const response = await axios.get("http://localhost:8000/api/shop?"+ query);
+        return response.data;
+    }
+    const { data, isLoading, status, refetch } = useQuery({
+        queryKey: ['product', brand],
+        queryFn: () => fetchProducts(brand?.title ? 'brand=' + brand?.title : ''),
     });
-    
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
+
+   
+
+    const brands:Ibrand[] = [
+        {'title': 'acer'},
+        {'title': 'asus'},
+        {'title': 'apple'},
+        {'title': 'msi'},
+    ]
 
     const handleSort = () => {
         const sortedLaptops = data.sort((a: Iproduct, b: Iproduct) => a.price - b.price);
@@ -32,14 +47,9 @@ const Shop = () => {
         <>
             <div className='catalog'>
                 <h1>Laptop</h1>
-                <select onClick={handleSort}>
-                    <option value="">qwe</option>
-                    <option  value="sort=chip">От дешевых к дорогим</option>
-                    <option value="">От дорогих к дешевым</option>  
-                </select>
-                <nav>
-                    <NavLink to="/shop/sort=chip">Перейти к сортировке от дешевых к дорогим</NavLink>
-                </nav>    
+                <Dropdown value={brand} onChange={(e) => setBrand(e.value)} options={brands} optionLabel="title" 
+                    placeholder="Select a City" className="w-full md:w-14rem" />
+         
                 <ul className='catalog-grid'>
                     {data.map((product:Iproduct) => (
                         <li key={product.id} className='product'>
@@ -66,7 +76,7 @@ const Shop = () => {
                                     <span className='product-price'>
                                         {product.price.toLocaleString('uk-UA')}<span className='currency'>₴</span>
                                     </span>
-                                    <button className='buy-btn'>Купить</button>
+                                    <button className='buy-btn' onClick={() => refetch()}>Купить</button>
                                 </div>
                             </div>    
                         </li>
