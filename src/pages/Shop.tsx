@@ -10,16 +10,14 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Ibrand } from '../Interfaces/Ibrand';
         
-
-
-
- 
 function Shop()  {
     const [brand, setBrand] = useState<Ibrand | null>(null);
+
     const fetchProducts = async (query:string | null) => {
         const response = await axios.get("http://localhost:8000/api/shop?"+ query);
         return response.data;
     }
+
     const { data, isLoading, status, refetch } = useQuery({
         queryKey: ['product', brand],
         queryFn: () => fetchProducts(brand?.title ? 'brand=' + brand?.title : ''),
@@ -28,9 +26,7 @@ function Shop()  {
     if (isLoading) {
         return <div>Loading...</div>;
     }
-
-   
-
+    
     const brands:Ibrand[] = [
         {'title': 'acer'},
         {'title': 'asus'},
