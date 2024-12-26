@@ -6,7 +6,7 @@ export function useAlert() {
             title: "Success",
             text: text,
             showConfirmButton: false,
-            timer: 3000,
+            timer: 2000,
             icon: status
         });
     }

@@ -5,6 +5,7 @@ import Register from '../pages/Register';
 import Login from '../pages/Login';
 import Shop from '../pages/Shop';
 import ShopSortChip from '../pages/ShopSortChip';
+import AdminPanel from '../pages/AdminPanel';
 
 // Список маршрутов
 export const routerList = [
@@ -31,6 +32,10 @@ export const routerList = [
       {
         path: "/shop/sort=chip",
         element: <ShopSortChip />
+      },
+      {
+        path: "/admin",
+        element: <AdminPanel />
       },
     ]
   }

@@ -5,10 +5,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useRegister } from '../actions/useRegister';
 import * as yup from 'yup';
 import { useAlert } from '../actions/useAlert';
-import { useMutation } from '@tanstack/react-query';
+import { dataTagErrorSymbol, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { useAuth } from '../components/AuthContext';
+import { useNavigate } from 'react-router';
 
 export default function Register() { 
+    const navigate = useNavigate();
+    const { login } = useAuth();
     const {
         schema
     } = useRegister()
@@ -46,7 +50,10 @@ export default function Register() {
         onSuccess: (data) => {
           console.log('Registration successful:', data);
           showSwal('Registration successful!', 'success');
+          login(data.data.data.access_token, data.data.user_status); 
           //reset();
+          navigate("/shop")
+         
         },
         onError: (error) => {
           console.error('Registration failed:', error);
@@ -84,6 +91,7 @@ export default function Register() {
                         <label className='error-reg'>{errors.passwordConfirmation?.message}</label>
                     </div>
                     <button type="submit" className="btn btn-primary btn-ghost">Register</button>
+                    {mutation.isError && <p style={{ color: 'red' }}>Registration failed. Please try again.</p>}
                 </form>
             </div>
         </>

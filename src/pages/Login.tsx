@@ -6,8 +6,13 @@ import * as yup from 'yup';
 import { useAlert } from '../actions/useAlert';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
+import { useAuth } from '../components/AuthContext';
+import { redirect } from "react-router";
+import { useNavigate } from 'react-router';
 
 export default function Login() {
+    const navigate = useNavigate();
+    const { login } = useAuth();
     const {
         schema
     } = useLogin()
@@ -42,7 +47,9 @@ export default function Login() {
         onSuccess: (data) => {
           console.log('Logination successful:', data);
           showSwal('Logination successful!', 'success');
+          login(data.data.access_token, data.user_status);
           //reset();
+          navigate("/shop")
         },
         onError: (error) => {
           console.error('Logination failed:', error);
@@ -53,7 +60,7 @@ export default function Login() {
     return (
         <>
             <div className='register-container'>
-                <form action="" className="login-form" onClick={handleSubmit(submitForm)}>
+                <form className="login-form" onSubmit={handleSubmit(submitForm)} method='POST'>
                     <h1>Login</h1>
                     <div className="form-input-material">
                         <label htmlFor="email">Email</label>

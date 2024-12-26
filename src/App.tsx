@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-query'
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 import "primereact/resources/themes/lara-light-green/theme.css";
+import { AuthProvider } from './components/AuthContext';
         
 const queryClient = new QueryClient()
 
@@ -19,7 +20,9 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <PrimeReactProvider>
-          <MyAppRouter />
+          <AuthProvider>
+            <MyAppRouter />
+          </AuthProvider>
         </PrimeReactProvider>
       </QueryClientProvider>
     </>  

@@ -1,7 +1,16 @@
 .catalog{
  background: white;
+ margin-left: -2%;
+
 }
-.catalog-grid{
+.catalog-filters {
+    display: block;
+    list-style: none;
+}
+.catalog-filter {
+    margin-bottom: 1rem;
+}
+.catalog-grid {
     display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -74,9 +83,5 @@
 	left: 7px;
 } */
 .star-rating {
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    font-size: 15px;
-    cursor: pointer;
+    border: none;
 }
