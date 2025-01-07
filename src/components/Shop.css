@@ -13,7 +13,6 @@
 .catalog-grid {
     display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
 }
 .product {
     width: 19%;
@@ -84,4 +83,7 @@
 } */
 .star-rating {
     border: none;
+}
+.margin-class{
+    margin-left: 40%;
 }

@@ -4,14 +4,14 @@ import { useAuth } from './AuthContext';
 
 export default function Header() {
   const { isAuthenticated, logout } = useAuth();
-  const Status = localStorage.getItem('authStatus');
-  console.log(Status)
+  const authStatus = localStorage.getItem('authStatus');
+  console.log(authStatus)
 
   return (
     <>
         <header>
             <nav>
-              {isAuthenticated && Status === 'admin' && (
+              {isAuthenticated && authStatus === 'admin' && (
                 <NavLink to="/admin" className='button-23'>Admin</NavLink>
               )}
 

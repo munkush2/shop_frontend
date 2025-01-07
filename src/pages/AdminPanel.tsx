@@ -4,6 +4,7 @@ import { Iuser } from "../Interfaces/Iuser";
 import { useState } from "react";
 import type { TableColumnsType, TableProps } from 'antd';
 import { Button, Space, Table, Select } from 'antd';
+import { useNavigate } from "react-router";
 
 
 type OnChange = NonNullable<TableProps<Iuser>['onChange']>;
@@ -13,6 +14,7 @@ type GetSingle<T> = T extends (infer U)[] ? U : never;
 type Sorts = GetSingle<Parameters<OnChange>[2]>;
 
 const AdminPanel = () => {
+    const navigate = useNavigate();
     const [filteredInfo, setFilteredInfo] = useState<Filters>({});
     const [sortedInfo, setSortedInfo] = useState<Sorts>({});
     
@@ -38,7 +40,7 @@ const AdminPanel = () => {
     }
      
     const { data, isLoading, status, refetch } = useQuery({
-        queryKey: [],
+        queryKey: ['user_status', localStorage],
         queryFn: () => {
             const queryParams = [
             ].filter(Boolean).join('&');
@@ -46,7 +48,7 @@ const AdminPanel = () => {
             return fetchUsers(queryParams);
         },
     });
-
+    
     const mutation = useMutation({
         mutationFn: async (updateStatusUser: {id: number, user_status: string }) => {
             const authToken = localStorage.getItem('authToken');
@@ -64,6 +66,12 @@ const AdminPanel = () => {
             return response.data;
         },
         onSuccess: (data) => {
+            localStorage.removeItem('authStatus');
+            localStorage.setItem('authStatus', data.user_status);
+            let authStatus = localStorage.getItem('authStatus')
+            if(authStatus !== 'admin') {
+                navigate("/shop")
+            }
             console.log('Logination successful:', data);
         },
         onError: (error) => {

@@ -4,7 +4,7 @@ import MessageForm from '../pages/MessageForm';
 import Register from '../pages/Register';
 import Login from '../pages/Login';
 import Shop from '../pages/Shop';
-import ShopSortChip from '../pages/ShopSortChip';
+import Product from '../pages/Product';
 import AdminPanel from '../pages/AdminPanel';
 
 // Список маршрутов
@@ -30,8 +30,8 @@ export const routerList = [
         element: <Shop />,
       },
       {
-        path: "/shop/sort=chip",
-        element: <ShopSortChip />
+        path: "/laptop/:id",
+        element: <Product />
       },
       {
         path: "/admin",
