@@ -3,9 +3,16 @@ import axios from "axios";
 import { Iuser } from "../Interfaces/Iuser";
 import { useState } from "react";
 import type { TableColumnsType, TableProps } from 'antd';
-import { Button, Space, Table, Select } from 'antd';
+import { Space, Table, Select } from 'antd';
 import { useNavigate } from "react-router";
-
+import { TabView, TabPanel } from 'primereact/tabview';
+import { InputText } from "primereact/inputtext";
+import { FloatLabel } from "primereact/floatlabel";
+import "/node_modules/primeflex/primeflex.css";
+import { InputTextarea } from "primereact/inputtextarea";
+import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
+import { Button } from 'primereact/button';
+import { InewProduct } from "../Interfaces/InewProduct";
 
 type OnChange = NonNullable<TableProps<Iuser>['onChange']>;
 type Filters = Parameters<OnChange>[1];
@@ -17,6 +24,14 @@ const AdminPanel = () => {
     const navigate = useNavigate();
     const [filteredInfo, setFilteredInfo] = useState<Filters>({});
     const [sortedInfo, setSortedInfo] = useState<Sorts>({});
+
+    const [brand, setBrand] = useState<string>('');
+    const [ram, setRam] = useState<string>('');
+    const [cpu, setCpu] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [price, setPrice] = useState<number | null>(null);
+    const [image, setImage] = useState<string>('');
+    const [rating, setRating] = useState<number | null>(null);
     
     const fetchUsers = async (query:string | null) => {
         // console.log(localStorage)
@@ -48,6 +63,30 @@ const AdminPanel = () => {
             return fetchUsers(queryParams);
         },
     });
+
+    const addProduct = useMutation({
+        mutationFn: async (newProduct: InewProduct) => {
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                console.error('No auth token found');
+                throw new Error('No auth token found');
+            }
+            const headers = {
+                Authorization: `Bearer ${authToken}`,
+                'Content-Type': 'application/json',
+            };
+          console.log('Sending data to API:', newProduct);
+          const response = await axios.post('http://localhost:8000/api/admin/addproduct', newProduct, {headers});
+          return response;
+        },
+        onSuccess: (data) => {
+          console.log('Registration successful:', data);
+          //reset()
+        },
+        onError: (error) => {
+          console.error('Registration failed:', error);
+        },
+    });
     
     const mutation = useMutation({
         mutationFn: async (updateStatusUser: {id: number, user_status: string }) => {
@@ -62,7 +101,7 @@ const AdminPanel = () => {
             };
 
             console.log('Sending data to API:', updateStatusUser);
-            const response = await axios.post('http://localhost:8000/api/admin/users/updatestatus', updateStatusUser, {headers});
+            const response = await axios.post('http://localhost:8000/api/admin/users/status/update', updateStatusUser, {headers});
             return response.data;
         },
         onSuccess: (data) => {
@@ -100,9 +139,7 @@ const AdminPanel = () => {
     };
 
 
-    if (isLoading) {
-        return <div>Loading...</div>
-    }
+  
 
     const columns: TableColumnsType<Iuser> = [
         {
@@ -158,22 +195,92 @@ const AdminPanel = () => {
             })
         },
     ]
+///fdsdffafsdasdfdsafsadassfadsd
 
-
+    const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const newProduct: InewProduct = {
+            brand: brand,
+            ram: `${ram} GB`,
+            cpu: cpu,
+            name: name,
+            price: price ?? 0,
+            image: image,
+            rating: rating ?? 0,
+        }
+        addProduct.mutate(newProduct);
+    }
 
 
     return (
         <>
-            <div>
-                <h1>ADMIN</h1>
-                <div>
-                    <Space style={{ marginBottom: 16 }}>
-                        <Button onClick={clearFilters}>Clear filters</Button>
-                        <Button onClick={clearAll}>Clear filters and sorters</Button>
-                    </Space>
-                    <Table<Iuser>  columns={columns} dataSource={data} onChange={handleChange} rowKey="id" />
-                </div>
-            </div>
+            <TabView>
+                <TabPanel header="Admin control">
+                    <div>
+                        <h1>ADMIN</h1>
+                        <div>
+                            <Space style={{ marginBottom: 16 }}>
+                                <Button onClick={clearFilters}>Clear filters</Button>
+                                <Button onClick={clearAll}>Clear filters and sorters</Button>
+                            </Space>
+                            <Table<Iuser>  columns={columns} dataSource={data} onChange={handleChange} rowKey="id" />
+                        </div>
+                    </div>
+                </TabPanel>
+                <TabPanel header="Add product">
+                    <div>
+                        <form onSubmit={handleAddProduct} method='POST'>
+                            <div>
+                                <div className="flex justify-content-center mb-4">
+                                    <FloatLabel>
+                                        <InputText id="brand" value={brand} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBrand(e.target.value)} />
+                                        <label htmlFor="Brand">Brand</label>
+                                    </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                    <FloatLabel>
+                                        <InputText id="ram" value={ram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { const numericValue = e.target.value.replace(/\D/g, ''); setRam(numericValue); }}/>
+                                        <label htmlFor="ram">Ram</label>
+                                    </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                    <FloatLabel>
+                                        <InputText id="cpu" value={cpu} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCpu(e.target.value)} />
+                                        <label htmlFor="cpu">Cpu</label>
+                                    </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                <FloatLabel>
+                                    <InputTextarea autoResize id="name"  value={name} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setName(e.target.value)} rows={1} cols={20} />
+                                    <label htmlFor="name">Name</label>
+                                </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                    <FloatLabel>
+                                        <InputNumber id="price" variant="filled" value={price} onValueChange={(e: InputNumberValueChangeEvent) => setPrice(e.value ?? null)} mode="decimal" minFractionDigits={2} />
+                                        <label htmlFor="price">Price</label>
+                                    </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                    <FloatLabel>
+                                        <InputText id="imageURL" value={image} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImage(e.target.value)} />
+                                        <label htmlFor="image URL">Image URL</label>
+                                    </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                    <FloatLabel>
+                                        <InputNumber id="rating" value={rating} onValueChange={(e: InputNumberValueChangeEvent) => setRating(e.value ?? null)} />
+                                        <label htmlFor="rating">Rating</label>
+                                    </FloatLabel>
+                                </div>
+                                <div className="flex justify-content-center mb-4">
+                                    <Button type="submit" label="Add product" severity="secondary" rounded />
+                                </div>    
+                            </div>
+                        </form>
+                    </div>
+                </TabPanel>
+            </TabView>     
         </>
     )
 }

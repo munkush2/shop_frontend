@@ -12,6 +12,7 @@ import {
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 import "primereact/resources/themes/lara-light-green/theme.css";
 import { AuthProvider } from './components/AuthContext';
+import { FiltersProvider } from './components/FiltersContext';
         
 const queryClient = new QueryClient()
 
@@ -21,7 +22,9 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <PrimeReactProvider>
           <AuthProvider>
-            <MyAppRouter />
+            <FiltersProvider>
+              <MyAppRouter />
+            </FiltersProvider>
           </AuthProvider>
         </PrimeReactProvider>
       </QueryClientProvider>

@@ -6,6 +6,8 @@ import Login from '../pages/Login';
 import Shop from '../pages/Shop';
 import Product from '../pages/Product';
 import AdminPanel from '../pages/AdminPanel';
+import Filters from '../components/Filters';
+
 
 // Список маршрутов
 export const routerList = [
@@ -15,23 +17,29 @@ export const routerList = [
     children: [
       {
         path: "/main",
-        element: <MessageForm />
+        element: <MessageForm />,
       },
       {
         path: "/register",
-        element: <Register />
+        element: <Register />,
       },
       {
         path: "/login",
-        element: <Login />
+        element: <Login />,
       },
       {
         path: "/shop",
         element: <Shop />,
+        children:[
+          {
+            path: "",
+            element: <Filters />,
+          }
+        ]
       },
       {
         path: "/laptop/:id",
-        element: <Product />
+        element: <Product />,
       },
       {
         path: "/admin",
