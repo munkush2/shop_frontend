@@ -7,9 +7,14 @@ import { Ibrand } from '../Interfaces/Ibrand';
 import { Icpu } from '../Interfaces/Icpu';
 import { Iram } from '../Interfaces/Iram';
 import { useFilters } from '../actions/useFilters';
+import { useEffect, useState } from "react";
+import CONFIG from "../config/config";
 
 const Filters = () => { 
     const { brand, setBrand, ram, setRam, cpu, setCpu, price, setPrice, sendPrice, setSendPrice } = useFilters();
+    const [brands, setBrands] = useState<Ibrand[]>([])
+    const [cpus, setCpus] = useState<Icpu[]>([])
+    const [rams, setRams] = useState<Iram[]>([])
     const MinPrice = 10000 
     const MaxPrice = 300000
 
@@ -19,7 +24,7 @@ const Filters = () => {
             Authorization: 'Bearer ' + localStorage.getItem('authToken'),
             }
         }
-        const response = await axios.get("http://localhost:8000/api/shop/filters", config).catch(function (error) {
+        const response = await axios.get(`${CONFIG.API_BASE_URL}/shop/filters`, config).catch(function (error) {
             if (error.response) {
             console.log(error.response.data);
             console.log(error.response.status);
@@ -28,7 +33,7 @@ const Filters = () => {
         }).then(function(response) {
             return response;
         });
-        return response?.data;
+        return response?.data.data;
     };
 
     const { data: filters, isLoading: filtersLoading } = useQuery({
@@ -36,9 +41,16 @@ const Filters = () => {
         queryFn: fetchFilters,
     });
 
-    const brands:Ibrand[] = filters?.brand
-    const cpus:Icpu[] = filters?.cpu
-    const rams:Iram[] = filters?.ram
+    useEffect(() => {
+        if (filters?.price_range) {
+            const min = filters.price_range.price_min
+            const max = filters.price_range.price_max
+            setPrice([min, max]);
+            setBrands(filters.brand)
+            setCpus(filters.cpu)
+            setRams(filters.ram)
+        }
+    }, [filters]);
 
     const resetFilters = () => {
         setBrand(null);
@@ -71,7 +83,7 @@ const Filters = () => {
                 ) : (
                     <h3 className="flex margin-class">Data not found</h3>
                 )}
-                    <p>Selected range:  {price ? `${price[0]} - ${price[1]}` : 'No range selected'}</p>  
+                    <div>Selected range: <p>{price ? `${price[0]} - ${price[1]}` : 'No range selected'}</p></div>  
                     <div className="card flex justify-content-center">
                         <Slider value={price || 0} onChange={(e: SliderChangeEvent) => {
                             const [newMin, newMax] = e.value as [number, number];

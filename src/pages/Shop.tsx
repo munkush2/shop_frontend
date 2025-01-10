@@ -7,16 +7,23 @@ import { Rating } from "primereact/rating";
 import { Skeleton } from 'primereact/skeleton';
 import { Link, Outlet } from 'react-router';
 import { useFilters } from '../actions/useFilters';
+import CONFIG from '../config/config';
 
 function Shop()  {
-    const { brand, ram, cpu, price, setPrice, sendPrice } = useFilters();
+    const { 
+        brand, 
+        ram, 
+        cpu, 
+        price, 
+        sendPrice 
+    } = useFilters();
     const fetchProducts = async (query:string | null) => {
         let config = {
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('authToken'),
             }
         }
-        const response = await axios.get("http://localhost:8000/api/shop?"+ query, config).catch(function (error) {
+        const response = await axios.get(`${CONFIG.API_BASE_URL}/shop?`+ query, config).catch(function (error) {
             if (error.response) {
               console.log(error.response.data);
               console.log(error.response.status);
@@ -25,33 +32,23 @@ function Shop()  {
         }).then(function(response) {
             return response;
         });
-        return response?.data;
+        return response?.data.data;
     };
 
     const { data, isLoading } = useQuery({
         queryKey: ['product', brand, ram, cpu, sendPrice],
         queryFn: () => {
             const queryParams = [
-              brand?.title ? `brand=${brand.title}` : '',
-              ram?.title ? `ram=${ram.title}` : '',
-              cpu?.title ? `cpu=${cpu.title}` : '',
-              price ? `price_min=${price[0]}` : '',
-              price ? `price_max=${price[1]}` : '',
+                brand?.title ? `brand=${brand.title}` : '',
+                ram?.title ? `ram=${ram.title}` : '',
+                cpu?.title ? `cpu=${cpu.title}` : '',
+                price ? `price_min=${price[0]}` : '',
+                price ? `price_max=${price[1]}` : '',
             ].filter(Boolean).join('&');
             
             return fetchProducts(queryParams);
         },
     });
-
-    useEffect(() => {
-        fetchProducts(null).then((data) => {
-            if (data?.price_range) {
-                const min = data.price_range.price_min
-                const max = data.price_range.price_max
-                setPrice([min, max]);
-            }
-        });
-    }, []);
 
     return (
         <> 
@@ -64,7 +61,6 @@ function Shop()  {
                     <div className='flex flex-wrap w-full '>
                         {data?.products && data?.products.length > 0 && !isLoading ?(
                             data.products.map((product:Iproduct) => (
-
                                 <li key={product.id} className='product'>
                                     <div className='test'>
                                         <div className='image'>
