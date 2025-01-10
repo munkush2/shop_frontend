@@ -3,9 +3,6 @@ import './App.css';
 import  { MyAppRouter }  from './routes';
 import './index.css'
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'

@@ -1,4 +1,3 @@
-import React, { Children } from 'react';
 import Header from '../components/Header';
 import MessageForm from '../pages/MessageForm';
 import Register from '../pages/Register';
@@ -7,13 +6,12 @@ import Shop from '../pages/Shop';
 import Product from '../pages/Product';
 import AdminPanel from '../pages/AdminPanel';
 import Filters from '../components/Filters';
+import AddProduct from '../components/AddProduct';
 
-
-// Список маршрутов
 export const routerList = [
   {
     path: "/",
-    element: <Header />,  // Главный компонент Header
+    element: <Header />,
     children: [
       {
         path: "/main",
@@ -30,7 +28,7 @@ export const routerList = [
       {
         path: "/shop",
         element: <Shop />,
-        children:[
+        children: [
           {
             path: "",
             element: <Filters />,
@@ -43,7 +41,13 @@ export const routerList = [
       },
       {
         path: "/admin",
-        element: <AdminPanel />
+        element: <AdminPanel />,
+        children: [
+          {
+            path: "",
+            element: <AddProduct />,
+          }
+        ]
       },
     ]
   }

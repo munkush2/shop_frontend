@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Iregistration } from '../Interfaces/Iregistration';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRegister } from '../actions/useRegister';
-import * as yup from 'yup';
 import { useAlert } from '../actions/useAlert';
-import { dataTagErrorSymbol, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router';
+import CONFIG from '../config/config';
 
 export default function Register() { 
     const navigate = useNavigate();
@@ -26,7 +25,6 @@ export default function Register() {
         setValue,
         getValues,
         formState :{errors},
-        watch,
     } = useForm<Iregistration>({
         mode: 'onChange', 
         resolver :yupResolver(schema)
@@ -43,21 +41,20 @@ export default function Register() {
 
     const mutation = useMutation({
         mutationFn: async (newUser: { email: string; password: string; password_confirmation: string }) => {
-          console.log('Sending data to API:', newUser);
-          const response = await axios.post('http://localhost:8000/api/register/registration', newUser);
-          return response;
+            console.log('Sending data to API:', newUser);
+            const response = await axios.post(`${CONFIG.API_BASE_URL}/register/registration`, newUser);
+            return response;
         },
         onSuccess: (data) => {
-          console.log('Registration successful:', data);
-          showSwal('Registration successful!', 'success');
-          login(data.data.data.access_token, data.data.user_status); 
-          //reset();
-          navigate("/shop")
-         
+            console.log('Registration successful:', data);
+            showSwal('Registration successful!', 'success');
+            login(data.data.data.access_token, data.data.data.user_status); 
+            reset();
+            navigate("/shop")
         },
         onError: (error) => {
-          console.error('Registration failed:', error);
-          showSwal('Registration failed. Please try again.', 'error');
+            console.error('Registration failed:', error);
+            showSwal('Registration failed. Please try again.', 'error');
         },
     });
 
@@ -66,7 +63,6 @@ export default function Register() {
             <div className='register-container'>
                 <form className="login-form" onSubmit={handleSubmit(submitForm)} method='POST'>
                     <h1>Register</h1>
-
                     <div className="form-input-material">
                         <label htmlFor="email">Email</label>
                         <input {...register('email')} onChange={(e) => setValue('email', e.target.value)}
@@ -74,19 +70,17 @@ export default function Register() {
                         />        
                         <label className='error-reg'>{errors.email?.message}</label>       
                     </div>
-
                     <div className="form-input-material">
                         <label htmlFor="password">Password</label>
                         <input {...register('password')} 
-                            type="password1" name="password" id="password" placeholder=" " autoComplete="off" className="form-control-material" 
+                            type="password" name="password" id="password" placeholder=" " autoComplete="off" className="form-control-material" 
                         />
                         <label className='error-reg'>{errors.password?.message}</label>
                     </div>
-
                     <div className="form-input-material">
                         <label htmlFor="password_confirmation">Password confirmation</label>
                         <input {...register('passwordConfirmation')}
-                            type="password1" name="passwordConfirmation" id="passwordConfirmation" placeholder=" " autoComplete="off" className="form-control-material" 
+                            type="password" name="passwordConfirmation" id="passwordConfirmation" placeholder=" " autoComplete="off" className="form-control-material" 
                             />
                         <label className='error-reg'>{errors.passwordConfirmation?.message}</label>
                     </div>

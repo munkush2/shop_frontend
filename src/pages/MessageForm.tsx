@@ -4,29 +4,25 @@ import { useAlert } from "../actions/useAlert"
 import { useMessage } from "../actions/useMessage"
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
 
 export default function MessageForm() {
     const [messages, setMessages] = useState<Imessage[]>([])
     const {
-            schema
-        } = useMessage()
+        schema
+    } = useMessage()
     const {
-            showSwal
-        } = useAlert();
+        showSwal
+    } = useAlert();
     const {
-            register,
-            handleSubmit,
-            reset,
-            setValue,
-            getValues,
-            formState :{errors},
-            watch,
-        } = useForm<Imessage>({
-            mode: 'onChange', 
-            resolver :yupResolver(schema)
-        });
-    const submitForm = (data: Imessage) => {
+        register,
+        handleSubmit,
+        reset,
+        getValues,
+    } = useForm<Imessage>({
+        mode: 'onChange', 
+        resolver :yupResolver(schema)
+    });
+    const submitForm = () => {
         const newMessage = {
             id: Date.now(),
             userName: getValues().userName,
@@ -48,8 +44,6 @@ export default function MessageForm() {
                                 <input {...register('userName')} 
                                     type="text" style={{width: "500px", height: "25px", borderRadius: "15px", fontSize: "16px", borderColor: "red"}}
                                     id="userName"
-                                    //value={getValues().userName}
-                                    //onChange={(event) => setValue('userName', event.target.value)}
                                 />
                             </div>   
                             <div style={{marginBottom: "15px", display:"grid"}}>
@@ -57,8 +51,6 @@ export default function MessageForm() {
                                 <input {...register('text')} 
                                     type="text" style={{width: "500px", height: "25px", borderRadius: "15px", fontSize: "16px", borderColor: "red"}}
                                     id="message"
-                                    //value={getValues().text}
-                                    //onChange={(event) => setValue('text', event.target.value)}
                                 />
                             </div>     
                         </div>
@@ -69,16 +61,15 @@ export default function MessageForm() {
                     </form>
                 </div>    
                 <div style={{width:"50%", marginTop: "100px", fontSize: "20px"}}>
-                    
                     <ul>
                         <p>Messages: </p>
-                    {messages.map((message) => (
-                        <li key={message.id} style={{marginLeft: "25px", fontSize: "18px", border: "1px solid green", borderRadius: "15px",
-                            marginBottom: "8px", paddingLeft: "8px", height: "30px"
-                        }}>
-                            <strong>{message.userName}: </strong>{message.text}
-                        </li>
-                    ))} 
+                        {messages.map((message) => (
+                            <li key={message.id} style={{marginLeft: "25px", fontSize: "18px", border: "1px solid green", borderRadius: "15px",
+                                marginBottom: "8px", paddingLeft: "8px", height: "30px"
+                            }}>
+                                <strong>{message.userName}: </strong>{message.text}
+                            </li>
+                        ))} 
                     </ul>
                 </div>
             </div>

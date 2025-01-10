@@ -1,4 +1,3 @@
-import React, { useState }  from 'react'; 
 import { Rating } from 'primereact/rating';
 import { useParams } from 'react-router';
 import axios from 'axios';
@@ -6,11 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Iproduct } from '../Interfaces/Iproduct';
 import { Skeleton } from 'primereact/skeleton';
 import { TabView, TabPanel } from 'primereact/tabview';
+import CONFIG from '../config/config';
 
 const Product = () => {
     const { id } = useParams(); 
-    const [activeIndex, setActiveIndex] = useState(1);
-   // console.log(id)
 
     const fetchProducts = async (query:string | null) => {
         let config = {
@@ -18,26 +16,25 @@ const Product = () => {
             Authorization: 'Bearer ' + localStorage.getItem('authToken'),
             }
         }
-        const response = await axios.get("http://localhost:8000/api/shop?"+ query, config).catch(function (error) {
+        const response = await axios.get(`${CONFIG.API_BASE_URL}/shop?`+ query, config).catch(function (error) {
             if (error.response) {
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
             }
 
         }).then(function(response) {
             return response;
         });
-        return response?.data;
+        return response?.data.data;
     };
 
-    const { data, isLoading, status, refetch } = useQuery({
-        queryKey: [],
+    const { data, isLoading } = useQuery({
+        queryKey: ['product'],
         queryFn: () => {
             const queryParams = [
-             `id=${id}`
+                `id=${id}`
             ].filter(Boolean).join('&');
-            
             return fetchProducts(queryParams);
         },
     });
